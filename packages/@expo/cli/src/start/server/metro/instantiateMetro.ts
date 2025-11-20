@@ -7,7 +7,12 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { mergeConfig, resolveConfig, type InputConfigT, type ConfigT } from '@expo/metro/metro-config';
+import {
+  mergeConfig,
+  resolveConfig,
+  type InputConfigT,
+  type ConfigT,
+} from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import { getDefaultConfig, type LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
@@ -95,7 +100,16 @@ export async function loadMetroConfigAsync(
   const defaultConfig = getDefaultConfig(projectRoot);
   const resolvedConfig = await resolveConfig(options.config, projectRoot);
 
-  const overrideConfig: InputConfigT = {
+  let config: ConfigT = resolvedConfig.isEmpty
+    ? defaultConfig
+    : await mergeConfig(defaultConfig, resolvedConfig.config);
+  // Set the watchfolders to include the projectRoot, as Metro assumes this
+  // Force-override the reporter
+  config = {
+    ...config,
+    watchFolders: !config.watchFolders.includes(config.projectRoot)
+      ? [config.projectRoot, ...config.watchFolders]
+      : config.watchFolders,
     reporter: {
       update(event) {
         terminalReporter.update(event);
@@ -105,10 +119,6 @@ export async function loadMetroConfigAsync(
       },
     },
   };
-
-  let config: ConfigT = resolvedConfig.isEmpty
-    ? mergeConfig(defaultConfig, overrideConfig)
-    : await mergeConfig(defaultConfig, resolvedConfig.config, overrideConfig);
 
   // @ts-expect-error: Set the global require cycle ignore patterns for SSR bundles. This won't work with custom global prefixes, but we don't use those.
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;

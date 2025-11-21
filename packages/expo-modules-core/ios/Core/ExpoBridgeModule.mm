@@ -45,17 +45,15 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   _bridge = bridge;
   _appContext.reactBridge = bridge;
 
-#if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
   _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
-#endif // React Native <0.74
 }
 
-#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-- (void)setRuntimeExecutor:(RCTRuntimeExecutor *)runtimeExecutor
-{
-  _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge withExecutor:runtimeExecutor];
-}
-#endif // React Native >=0.74
+//#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
+//- (void)setRuntimeExecutor:(RCTRuntimeExecutor *)runtimeExecutor
+//{
+//  _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge withExecutor:runtimeExecutor];
+//}
+//#endif // React Native >=0.74
 
 /**
  This should be called inside `[EXNativeModulesProxy setBridge:]`.

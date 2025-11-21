@@ -76,6 +76,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
         // Otherwise the JSCRuntime asserts may fail on deallocation.
         releaseRuntimeObjects()
       } else if _runtime != oldValue {
+        useModulesProvider("ExpoModulesProvider")
         // Try to install the core object automatically when the runtime changes.
         try? prepareRuntime()
       }

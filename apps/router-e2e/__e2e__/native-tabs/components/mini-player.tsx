@@ -1,7 +1,14 @@
 import FontAwesomeIcons from '@expo/vector-icons/FontAwesome5';
+import { useBottomAccessoryEnvironment } from 'expo-router/unstable-native-tabs';
 import { ColorValue, DynamicColorIOS, Platform, Pressable, Text, View } from 'react-native';
 
-export function MiniPlayer() {
+interface MiniPlayerProps {
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
+}
+
+export function MiniPlayer({ isPlaying, setIsPlaying }: MiniPlayerProps) {
+  const bottomAccessoryEnvironment = useBottomAccessoryEnvironment();
   const textColor = Platform.select<ColorValue>({
     ios: DynamicColorIOS({ light: 'black', dark: 'white' }),
     default: 'white',
@@ -45,12 +52,14 @@ export function MiniPlayer() {
             </Text>
           </View>
         </View>
-        <Pressable onPress={() => console.log('play pressed')}>
-          <FontAwesomeIcons name="play" size={18} color={textColor} />
+        <Pressable onPress={() => setIsPlaying(!isPlaying)}>
+          <FontAwesomeIcons name={isPlaying ? 'pause' : 'play'} size={18} color={textColor} />
         </Pressable>
-        <Pressable onPress={() => console.log('forward pressed')}>
-          <FontAwesomeIcons name="forward" size={24} color={textColor} />
-        </Pressable>
+        {bottomAccessoryEnvironment === 'regular' && (
+          <Pressable onPress={() => console.log('forward pressed')}>
+            <FontAwesomeIcons name="forward" size={24} color={textColor} />
+          </Pressable>
+        )}
       </View>
     </View>
   );

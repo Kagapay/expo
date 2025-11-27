@@ -19,6 +19,7 @@ import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
 } from '../types';
+import { BottomAccessoryEnvironmentContext } from '../hooks';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -569,47 +570,11 @@ describe('Misc', () => {
     expect(isValidElement(regularRender)).toBe(true);
     // To satisfy TypeScript
     if (!isValidElement(regularRender)) throw new Error();
-    expect(regularRender.type === BottomAccessoryContent).toBe(true);
+    expect(regularRender.type === BottomAccessoryEnvironmentContext).toBe(true);
 
     expect(isValidElement(inlineRender)).toBe(true);
     // To satisfy TypeScript
     if (!isValidElement(inlineRender)) throw new Error();
-    expect(inlineRender.type === BottomAccessoryContent).toBe(true);
-  });
-
-  it('passes the bottom accessory to NativeTabsView for correct state', () => {
-    const BottomAccessoryInline = jest.fn(() => <View testID="inline" />);
-    const BottomAccessoryRegular = jest.fn(() => <View testID="regular" />);
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.BottomAccessory forState="inline">
-            <BottomAccessoryInline />
-          </NativeTabs.BottomAccessory>
-          <NativeTabs.BottomAccessory forState="regular">
-            <BottomAccessoryRegular />
-          </NativeTabs.BottomAccessory>
-          <NativeTabs.Trigger name="index" />
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-    });
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabs).toHaveBeenCalledTimes(1);
-    expect(BottomTabs.mock.calls[0][0].bottomAccessory).toBeDefined();
-
-    const bottomAccessoryFn = BottomTabs.mock.calls[0][0].bottomAccessory!;
-    const regularRender = bottomAccessoryFn('regular');
-    const inlineRender = bottomAccessoryFn('inline');
-
-    expect(isValidElement(regularRender)).toBe(true);
-    // To satisfy TypeScript
-    if (!isValidElement(regularRender)) throw new Error();
-    expect(regularRender.type === BottomAccessoryRegular).toBe(true);
-
-    expect(isValidElement(inlineRender)).toBe(true);
-    // To satisfy TypeScript
-    if (!isValidElement(inlineRender)) throw new Error();
-    expect(inlineRender.type === BottomAccessoryInline).toBe(true);
+    expect(inlineRender.type === BottomAccessoryEnvironmentContext).toBe(true);
   });
 });
